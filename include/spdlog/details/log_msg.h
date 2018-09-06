@@ -40,6 +40,12 @@ struct log_msg
     size_t thread_id;
     fmt::memory_buffer raw;
     size_t msg_id{0};
+    // log source context
+    const char *file_name;
+    size_t file_name_len;
+    const char *func_name;
+    size_t func_name_len;
+    int line_num;
     // info about wrapping the formatted text with color
     mutable size_t color_range_start{0};
     mutable size_t color_range_end{0};

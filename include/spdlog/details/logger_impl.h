@@ -69,7 +69,6 @@ inline void spdlog::logger::log(level::level_enum lvl, const char *fmt, const Ar
     SPDLOG_CATCH_AND_HANDLE
 }
 
-template<typename... Args>
 inline void spdlog::logger::log(level::level_enum lvl, const char *msg)
 {
     if (!should_log(lvl))
@@ -79,6 +78,27 @@ inline void spdlog::logger::log(level::level_enum lvl, const char *msg)
     try
     {
         details::log_msg log_msg(&name_, lvl);
+        details::fmt_helper::append_c_str(msg, log_msg.raw);
+        sink_it_(log_msg);
+    }
+    SPDLOG_CATCH_AND_HANDLE
+}
+
+inline void spdlog::logger::log(level::level_enum lvl, const char *msg,
+    const char *file_name, size_t file_name_len, const char *func_name, size_t func_name_len, int line_num)
+{
+    if (!should_log(lvl))
+    {
+        return;
+    }
+    try
+    {
+        details::log_msg log_msg(&name_, lvl);
+        log_msg.file_name = file_name;
+        log_msg.file_name_len = file_name_len;
+        log_msg.func_name = func_name;
+        log_msg.func_name_len = func_name_len;
+        log_msg.line_num = line_num;
         details::fmt_helper::append_c_str(msg, log_msg.raw);
         sink_it_(log_msg);
     }

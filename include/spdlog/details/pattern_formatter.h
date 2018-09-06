@@ -375,7 +375,8 @@ class t_formatter SPDLOG_FINAL : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
-        fmt_helper::pad6(msg.thread_id, dest);
+//        fmt_helper::pad6(msg.thread_id, dest);
+        fmt_helper::append_int(msg.thread_id, dest);
     }
 };
 
@@ -453,6 +454,55 @@ class color_stop_formatter SPDLOG_FINAL : public flag_formatter
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
         msg.color_range_end = dest.size();
+    }
+};
+
+class filename_formatter SPDLOG_FINAL : public flag_formatter
+{
+    void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
+    {
+        if (msg.file_name != NULL) {
+            size_t len = (msg.file_name_len > 0) ? msg.file_name_len : strlen(msg.file_name);
+            dest.append(msg.file_name, msg.file_name + len);
+        }
+    }
+};
+
+class short_filename_formatter SPDLOG_FINAL : public flag_formatter
+{
+    void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
+    {
+        if (msg.file_name != NULL) {
+            size_t len = (msg.file_name_len > 0) ? msg.file_name_len : strlen(msg.file_name);
+            size_t n = len;
+            for (; n > 0; n--) {
+                if ((msg.file_name[n-1] == '/') || (msg.file_name[n-1] == '\\')) {
+                    break;
+                }
+            }
+            dest.append(msg.file_name + n, msg.file_name + (len - n));
+        }
+    }
+};
+
+class line_num_formatter SPDLOG_FINAL : public flag_formatter
+{
+    void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
+    {
+        if (msg.line_num > 0) {
+            fmt_helper::append_int(msg.line_num, dest);
+        }
+    }
+};
+
+class funcname_formatter SPDLOG_FINAL : public flag_formatter
+{
+    void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
+    {
+        if (msg.func_name != NULL) {
+            size_t len = (msg.func_name_len > 0) ? msg.func_name_len : strlen(msg.func_name);
+            dest.append(msg.func_name, msg.func_name + len);
+        }
     }
 };
 
@@ -722,6 +772,22 @@ private:
 
         case ('$'):
             formatters_.push_back(spdlog::make_unique<details::color_stop_formatter>());
+            break;
+
+        case ('q'):
+            formatters_.push_back(spdlog::make_unique<details::short_filename_formatter>());
+            break;
+
+        case ('Q'):
+            formatters_.push_back(spdlog::make_unique<details::filename_formatter>());
+            break;
+
+        case ('#'):
+            formatters_.push_back(spdlog::make_unique<details::line_num_formatter>());
+            break;
+
+        case ('u'):
+            formatters_.push_back(spdlog::make_unique<details::funcname_formatter>());
             break;
 
         default: // Unknown flag appears as is
