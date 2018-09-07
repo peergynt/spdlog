@@ -50,7 +50,11 @@ public:
 protected:
     void sink_it_(const details::log_msg &msg) override
     {
-        ::syslog(syslog_prio_from_level(msg), "%s", fmt::to_string(msg.raw).c_str());
+        if (msg.buf) {
+            ::syslog(syslog_prio_from_level(msg), "%s", msg.buf);
+        } else {
+            ::syslog(syslog_prio_from_level(msg), "%s", fmt::to_string(msg.raw).c_str());
+        }
     }
 
     void flush_() override {}

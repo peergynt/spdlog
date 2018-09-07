@@ -402,7 +402,11 @@ class v_formatter SPDLOG_FINAL : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
-        fmt_helper::append_buf(msg.raw, dest);
+        if (msg.buf) {
+            fmt_helper::append_c_str(msg.buf, dest);
+        } else {
+            fmt_helper::append_buf(msg.raw, dest);
+        }
     }
 };
 
@@ -461,7 +465,7 @@ class filename_formatter SPDLOG_FINAL : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
-        if (msg.file_name != NULL) {
+        if (msg.file_name) {
             size_t len = (msg.file_name_len > 0) ? msg.file_name_len : strlen(msg.file_name);
             dest.append(msg.file_name, msg.file_name + len);
         }
@@ -472,7 +476,7 @@ class short_filename_formatter SPDLOG_FINAL : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
-        if (msg.file_name != NULL) {
+        if (msg.file_name) {
             size_t len = (msg.file_name_len > 0) ? msg.file_name_len : strlen(msg.file_name);
             size_t n = len;
             for (; n > 0; n--) {
@@ -499,7 +503,7 @@ class funcname_formatter SPDLOG_FINAL : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
-        if (msg.func_name != NULL) {
+        if (msg.func_name) {
             size_t len = (msg.func_name_len > 0) ? msg.func_name_len : strlen(msg.func_name);
             dest.append(msg.func_name, msg.func_name + len);
         }
@@ -568,7 +572,11 @@ class full_formatter SPDLOG_FINAL : public flag_formatter
         msg.color_range_end = dest.size();
         dest.push_back(']');
         dest.push_back(' ');
-        fmt_helper::append_buf(msg.raw, dest);
+        if (msg.buf) {
+            fmt_helper::append_c_str(msg.buf, dest);
+        } else {
+            fmt_helper::append_buf(msg.raw, dest);
+        }
     }
 
 private:

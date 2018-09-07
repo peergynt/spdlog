@@ -78,7 +78,7 @@ inline void spdlog::logger::log(level::level_enum lvl, const char *msg)
     try
     {
         details::log_msg log_msg(&name_, lvl);
-        details::fmt_helper::append_c_str(msg, log_msg.raw);
+        log_msg.buf = msg;
         sink_it_(log_msg);
     }
     SPDLOG_CATCH_AND_HANDLE
@@ -99,7 +99,7 @@ inline void spdlog::logger::log(level::level_enum lvl, const char *msg,
         log_msg.func_name = func_name;
         log_msg.func_name_len = func_name_len;
         log_msg.line_num = line_num;
-        details::fmt_helper::append_c_str(msg, log_msg.raw);
+        log_msg.buf = msg;
         sink_it_(log_msg);
     }
     SPDLOG_CATCH_AND_HANDLE

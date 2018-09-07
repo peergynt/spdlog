@@ -40,6 +40,9 @@ struct log_msg
     size_t thread_id;
     fmt::memory_buffer raw;
     size_t msg_id{0};
+    // if buf is not null, it should be used
+    // instead of the raw buffer
+    const char *buf{nullptr};
     // log source context
     const char *file_name{nullptr};
     size_t file_name_len{0};

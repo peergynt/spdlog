@@ -43,7 +43,11 @@ protected:
         fmt::memory_buffer formatted;
         if (use_raw_msg_)
         {
-            details::fmt_helper::append_buf(msg.raw, formatted);
+            if (msg.buf) {
+                details::fmt_helper::append_c_str(msg.buf, formatted);
+            } else {
+                details::fmt_helper::append_buf(msg.raw, formatted);
+            }
         }
         else
         {
