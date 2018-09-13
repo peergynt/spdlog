@@ -71,6 +71,11 @@ inline void spdlog::logger::log(level::level_enum lvl, const char *fmt, const Ar
 
 inline void spdlog::logger::log(level::level_enum lvl, const char *msg)
 {
+    log(lvl, msg, std::char_traits<char>::length(msg));
+}
+
+inline void spdlog::logger::log(level::level_enum lvl, const char *msg, size_t msg_len)
+{
     if (!should_log(lvl))
     {
         return;
@@ -78,13 +83,43 @@ inline void spdlog::logger::log(level::level_enum lvl, const char *msg)
     try
     {
         details::log_msg log_msg(&name_, lvl);
-        log_msg.buf = msg;
+        log_msg.formatted = msg;
+        log_msg.formatted_len = msg_len;
+        sink_it_(log_msg);
+    }
+    SPDLOG_CATCH_AND_HANDLE
+}
+
+inline void spdlog::logger::log(level::level_enum lvl, const char *msg, const char *file_name, size_t file_name_len)
+{
+    log(lvl, msg, std::char_traits<char>::length(msg), file_name, file_name_len);
+}
+
+inline void spdlog::logger::log(level::level_enum lvl, const char *msg, size_t msg_len, const char *file_name, size_t file_name_len)
+{
+    if (!should_log(lvl))
+    {
+        return;
+    }
+    try
+    {
+        details::log_msg log_msg(&name_, lvl);
+        log_msg.file_name = file_name;
+        log_msg.file_name_len = file_name_len;
+        log_msg.formatted = msg;
+        log_msg.formatted_len = msg_len;
         sink_it_(log_msg);
     }
     SPDLOG_CATCH_AND_HANDLE
 }
 
 inline void spdlog::logger::log(level::level_enum lvl, const char *msg,
+    const char *file_name, size_t file_name_len, const char *func_name, size_t func_name_len, int line_num)
+{
+    log(lvl, msg, std::char_traits<char>::length(msg), file_name, file_name_len, func_name, func_name_len, line_num);
+}
+
+inline void spdlog::logger::log(level::level_enum lvl, const char *msg, size_t msg_len,
     const char *file_name, size_t file_name_len, const char *func_name, size_t func_name_len, int line_num)
 {
     if (!should_log(lvl))
@@ -99,7 +134,8 @@ inline void spdlog::logger::log(level::level_enum lvl, const char *msg,
         log_msg.func_name = func_name;
         log_msg.func_name_len = func_name_len;
         log_msg.line_num = line_num;
-        log_msg.buf = msg;
+        log_msg.formatted = msg;
+        log_msg.formatted_len = msg_len;
         sink_it_(log_msg);
     }
     SPDLOG_CATCH_AND_HANDLE

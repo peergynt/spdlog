@@ -50,8 +50,8 @@ public:
 protected:
     void sink_it_(const details::log_msg &msg) override
     {
-        if (msg.buf) {
-            ::syslog(syslog_prio_from_level(msg), "%s", msg.buf);
+        if (msg.formatted) {
+            ::syslog(syslog_prio_from_level(msg), "%.*s", msg.formatted_len, msg.formatted);
         } else {
             ::syslog(syslog_prio_from_level(msg), "%s", fmt::to_string(msg.raw).c_str());
         }

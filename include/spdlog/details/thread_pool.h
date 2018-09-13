@@ -46,7 +46,7 @@ struct async_msg
                                                    level(other.level),
                                                    time(other.time),
                                                    thread_id(other.thread_id),
-                                                   // XXX: could be other.buf
+                                                   // XXX: could be other.formatted
                                                    raw(move(other.raw)),
                                                    msg_id(other.msg_id),
                                                    worker_ptr(std::move(other.worker_ptr))
@@ -59,7 +59,7 @@ struct async_msg
         level = other.level;
         time = other.time;
         thread_id = other.thread_id;
-        // XXX: could be other.buf
+        // XXX: could be other.formatted
         raw = std::move(other.raw);
         msg_id = other.msg_id;
         worker_ptr = std::move(other.worker_ptr);
@@ -79,8 +79,8 @@ struct async_msg
         , msg_id(m.msg_id)
         , worker_ptr(std::forward<async_logger_ptr>(worker))
     {
-        if (m.buf) {
-            fmt_helper::append_c_str(m.buf, raw);
+        if (m.formatted) {
+            raw.append(msg.formatted, msg.formatted + msg.formatted_len);
         } else {
             fmt_helper::append_buf(m.raw, raw);
         }

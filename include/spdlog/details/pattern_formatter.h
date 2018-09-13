@@ -402,8 +402,8 @@ class v_formatter SPDLOG_FINAL : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
-        if (msg.buf) {
-            fmt_helper::append_c_str(msg.buf, dest);
+        if (msg.formatted) {
+            dest.append(msg.formatted, msg.formatted + msg.formatted_len);
         } else {
             fmt_helper::append_buf(msg.raw, dest);
         }
@@ -572,8 +572,8 @@ class full_formatter SPDLOG_FINAL : public flag_formatter
         msg.color_range_end = dest.size();
         dest.push_back(']');
         dest.push_back(' ');
-        if (msg.buf) {
-            fmt_helper::append_c_str(msg.buf, dest);
+        if (msg.formatted) {
+            dest.append(msg.formatted, msg.formatted + msg.formatted_len);
         } else {
             fmt_helper::append_buf(msg.raw, dest);
         }

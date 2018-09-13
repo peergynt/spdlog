@@ -47,7 +47,15 @@ public:
 
     void log(level::level_enum lvl, const char *msg);
 
+    void log(level::level_enum lvl, const char *msg, size_t msg_len);
+
+    void log(level::level_enum lvl, const char *msg, const char *file_name, size_t file_name_len);
+
+    void log(level::level_enum lvl, const char *msg, size_t msg_len, const char *file_name, size_t file_name_len);
+
     void log(level::level_enum lvl, const char *msg, const char *file_name, size_t file_name_len, const char *func_name, size_t func_name_len, int line_num);
+
+    void log(level::level_enum lvl, const char *msg, size_t msg_len, const char *file_name, size_t file_name_len, const char *func_name, size_t func_name_len, int line_num);
 
     template<typename... Args>
     void trace(const char *fmt, const Args &... args);
