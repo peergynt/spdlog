@@ -22,6 +22,7 @@
 #include "spdlog/formatter.h"
 #include "spdlog/sinks/sink.h"
 
+#include <locale>
 #include <memory>
 #include <string>
 #include <vector>
@@ -35,7 +36,7 @@ public:
     logger(std::string name, sinks_init_list sinks);
 
     template<typename It>
-    logger(std::string name, const It &begin, const It &end);
+    logger(std::string name, It begin, It end);
 
     virtual ~logger();
 
@@ -76,6 +77,9 @@ public:
     void critical(const char *fmt, const Args &... args);
 
 #ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
+#ifndef _WIN32
+#error SPDLOG_WCHAR_TO_UTF8_SUPPORT only supported on windows
+#else
     template<typename... Args>
     void log(level::level_enum lvl, const wchar_t *fmt, const Args &... args);
 
@@ -96,6 +100,7 @@ public:
 
     template<typename... Args>
     void critical(const wchar_t *fmt, const Args &... args);
+#endif // _WIN32
 #endif // SPDLOG_WCHAR_TO_UTF8_SUPPORT
 
     template<typename T>
@@ -146,7 +151,7 @@ public:
     virtual std::shared_ptr<logger> clone(std::string logger_name);
 
 protected:
-    virtual void sink_it_(details::log_msg &msg);
+    virtual void sink_it_(const details::log_msg &msg);
     virtual void flush_();
 
     bool should_flush_(const details::log_msg &msg);
@@ -155,8 +160,7 @@ protected:
     // message/minute
     void default_err_handler_(const std::string &msg);
 
-    // increment the message count (only if
-    // defined(SPDLOG_ENABLE_MESSAGE_COUNTER))
+    // increment the message count (only if defined(SPDLOG_ENABLE_MESSAGE_COUNTER))
     void incr_msg_counter_(details::log_msg &msg);
 
     const std::string name_;
@@ -166,11 +170,6 @@ protected:
     log_err_handler err_handler_;
     std::atomic<time_t> last_err_time_;
     std::atomic<size_t> msg_counter_;
-
-#ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> wstring_converter_;
-    std::mutex wstring_converter_mutex_;
-#endif
 };
 } // namespace spdlog
 

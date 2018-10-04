@@ -71,7 +71,7 @@ struct async_msg
 #endif
 
     // construct from log_msg with given type
-    async_msg(async_logger_ptr &&worker, async_msg_type the_type, details::log_msg &&m)
+    async_msg(async_logger_ptr &&worker, async_msg_type the_type, const details::log_msg &m)
         : msg_type(the_type)
         , level(m.level)
         , time(m.time)
@@ -152,9 +152,12 @@ public:
         }
     }
 
-    void post_log(async_logger_ptr &&worker_ptr, details::log_msg &&msg, async_overflow_policy overflow_policy)
+    thread_pool(const thread_pool &) = delete;
+    thread_pool &operator=(thread_pool &&) = delete;
+
+    void post_log(async_logger_ptr &&worker_ptr, const details::log_msg &msg, async_overflow_policy overflow_policy)
     {
-        async_msg async_m(std::forward<async_logger_ptr>(worker_ptr), async_msg_type::log, std::forward<log_msg>(msg));
+        async_msg async_m(std::forward<async_logger_ptr>(worker_ptr), async_msg_type::log, msg);
         post_async_msg_(std::move(async_m), overflow_policy);
     }
 

@@ -16,7 +16,7 @@
 
 template<typename It>
 inline spdlog::async_logger::async_logger(
-    std::string logger_name, const It &begin, const It &end, std::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
+    std::string logger_name, It begin, It end, std::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
     : logger(std::move(logger_name), begin, end)
     , thread_pool_(tp)
     , overflow_policy_(overflow_policy)
@@ -36,14 +36,14 @@ inline spdlog::async_logger::async_logger(
 }
 
 // send the log message to the thread pool
-inline void spdlog::async_logger::sink_it_(details::log_msg &msg)
+inline void spdlog::async_logger::sink_it_(const details::log_msg &msg)
 {
 #if defined(SPDLOG_ENABLE_MESSAGE_COUNTER)
     incr_msg_counter_(msg);
 #endif
     if (auto pool_ptr = thread_pool_.lock())
     {
-        pool_ptr->post_log(shared_from_this(), std::move(msg), overflow_policy_);
+        pool_ptr->post_log(shared_from_this(), msg, overflow_policy_);
     }
     else
     {
@@ -67,7 +67,7 @@ inline void spdlog::async_logger::flush_()
 //
 // backend functions - called from the thread pool to do the actual job
 //
-inline void spdlog::async_logger::backend_log_(details::log_msg &incoming_log_msg)
+inline void spdlog::async_logger::backend_log_(const details::log_msg &incoming_log_msg)
 {
     try
     {
