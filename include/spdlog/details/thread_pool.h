@@ -71,13 +71,13 @@ struct async_msg
 #endif
 
     // construct from log_msg with given type
-    async_msg(async_logger_ptr &&worker, async_msg_type the_type, const details::log_msg &m)
+    async_msg(async_logger_ptr &&worker, async_msg_type the_type, details::log_msg &&m)
         : msg_type(the_type)
         , level(m.level)
         , time(m.time)
         , thread_id(m.thread_id)
         , msg_id(m.msg_id)
-        , worker_ptr(std::forward<async_logger_ptr>(worker))
+        , worker_ptr(std::move(worker))
     {
         if (m.formatted) {
             raw.append(msg.formatted, msg.formatted + msg.formatted_len);
@@ -87,7 +87,7 @@ struct async_msg
     }
 
     async_msg(async_logger_ptr &&worker, async_msg_type the_type)
-        : async_msg(std::forward<async_logger_ptr>(worker), the_type, details::log_msg())
+        : async_msg(std::move(worker), the_type, details::log_msg())
     {
     }
 
@@ -155,9 +155,9 @@ public:
     thread_pool(const thread_pool &) = delete;
     thread_pool &operator=(thread_pool &&) = delete;
 
-    void post_log(async_logger_ptr &&worker_ptr, const details::log_msg &msg, async_overflow_policy overflow_policy)
+    void post_log(async_logger_ptr &&worker_ptr, details::log_msg &&msg, async_overflow_policy overflow_policy)
     {
-        async_msg async_m(std::forward<async_logger_ptr>(worker_ptr), async_msg_type::log, msg);
+        async_msg async_m(std::move(worker_ptr), async_msg_type::log, std::move(msg));
         post_async_msg_(std::move(async_m), overflow_policy);
     }
 

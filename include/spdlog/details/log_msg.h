@@ -39,7 +39,8 @@ struct log_msg
     log_clock::time_point time;
     size_t thread_id;
     fmt::memory_buffer raw;
-    mutable size_t msg_id{0};
+    size_t msg_id{0};
+
     // if formatted is not null, it must be used instead of the raw buffer.
     // formatted_len must contain the length of the formatted message.
     const char *formatted{nullptr};
@@ -50,7 +51,8 @@ struct log_msg
     const char *func_name{nullptr};
     size_t func_name_len{0};
     int line_num{0};
-    // info about wrapping the formatted text with color
+
+    // info about wrapping the formatted text with color (updated by pattern_formatter).
     mutable size_t color_range_start{0};
     mutable size_t color_range_end{0};
 };
