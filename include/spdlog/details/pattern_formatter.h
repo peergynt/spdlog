@@ -461,7 +461,7 @@ class color_stop_formatter final : public flag_formatter
     }
 };
 
-class filename_formatter SPDLOG_FINAL : public flag_formatter
+class filename_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
@@ -472,7 +472,7 @@ class filename_formatter SPDLOG_FINAL : public flag_formatter
     }
 };
 
-class short_filename_formatter SPDLOG_FINAL : public flag_formatter
+class short_filename_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
@@ -489,7 +489,7 @@ class short_filename_formatter SPDLOG_FINAL : public flag_formatter
     }
 };
 
-class line_num_formatter SPDLOG_FINAL : public flag_formatter
+class line_num_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
@@ -499,7 +499,7 @@ class line_num_formatter SPDLOG_FINAL : public flag_formatter
     }
 };
 
-class funcname_formatter SPDLOG_FINAL : public flag_formatter
+class funcname_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
