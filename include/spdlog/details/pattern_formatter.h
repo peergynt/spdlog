@@ -786,19 +786,19 @@ private:
             break;
 
         case ('q'):
-            formatters_.push_back(spdlog::make_unique<details::short_filename_formatter>());
+            formatters_.push_back(details::make_unique<details::short_filename_formatter>());
             break;
 
         case ('Q'):
-            formatters_.push_back(spdlog::make_unique<details::filename_formatter>());
+            formatters_.push_back(details::make_unique<details::filename_formatter>());
             break;
 
         case ('#'):
-            formatters_.push_back(spdlog::make_unique<details::line_num_formatter>());
+            formatters_.push_back(details::make_unique<details::line_num_formatter>());
             break;
 
         case ('u'):
-            formatters_.push_back(spdlog::make_unique<details::funcname_formatter>());
+            formatters_.push_back(details::make_unique<details::funcname_formatter>());
             break;
 
         default: // Unknown flag appears as is
