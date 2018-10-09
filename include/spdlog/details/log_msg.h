@@ -39,7 +39,7 @@ struct log_msg
     log_clock::time_point time;
     size_t thread_id;
     fmt::memory_buffer raw;
-    size_t msg_id{0};
+    size_t msg_id;
 
     // if formatted is not null, it must be used instead of the raw buffer.
     // formatted_len must contain the length of the formatted message.
